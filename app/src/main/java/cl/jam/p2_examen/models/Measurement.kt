@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 import java.time.LocalDate
 
 @Entity
-data class Post(
+data class Measurement(
     @PrimaryKey(autoGenerate = true) var id: Long? = null,
     var meterType: String,
     var date: LocalDate,

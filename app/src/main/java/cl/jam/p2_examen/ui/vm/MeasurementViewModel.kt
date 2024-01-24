@@ -9,36 +9,36 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import cl.jam.p2_examen.PostApplication
-import cl.jam.p2_examen.data.PostDao
-import cl.jam.p2_examen.models.Post
+import cl.jam.p2_examen.MeasurementApplication
+import cl.jam.p2_examen.data.MeasurementDao
+import cl.jam.p2_examen.models.Measurement
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class PostViewModel(val postDao: PostDao) : ViewModel() {
+class MeasurementViewModel(val measurementDao: MeasurementDao) : ViewModel() {
 
-    var postes by mutableStateOf(listOf<Post>())
+    var measurementList by mutableStateOf(listOf<Measurement>())
 
     fun deleteTable() {
         viewModelScope.launch(Dispatchers.IO) {
-            postDao.deleteTable()
+            measurementDao.deleteTable()
         }
-        getPosts()
+        getMeasurements()
     }
 
 
-    fun getPosts(): List<Post> {
+    fun getMeasurements(): List<Measurement> {
         viewModelScope.launch(Dispatchers.IO) {
-            postes = postDao.getAll()
+            measurementList = measurementDao.getAll()
         }
-        return postes;
+        return measurementList;
     }
 
-    fun addPost(Post: Post) {
+    fun addMeasurement(Measurement: Measurement) {
         viewModelScope.launch(Dispatchers.IO) {
-            postDao.insert(Post)
+            measurementDao.insert(Measurement)
         }
-        getPosts()
+        getMeasurements()
     }
 
     companion object {
@@ -46,8 +46,8 @@ class PostViewModel(val postDao: PostDao) : ViewModel() {
             initializer {
                 val savedStateHandle = createSavedStateHandle()
                 val application =
-                    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as PostApplication)
-                PostViewModel(application.postDao)
+                    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as MeasurementApplication)
+                MeasurementViewModel(application.measurementDao)
             }
         }
     }
