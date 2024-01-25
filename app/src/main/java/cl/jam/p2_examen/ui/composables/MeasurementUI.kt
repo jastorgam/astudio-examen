@@ -3,35 +3,33 @@ package cl.jam.p2_examen.ui.composables
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.rounded.AccountCircle
-import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cl.jam.p2_examen.R
 import cl.jam.p2_examen.helpers.getDate
-import cl.jam.p2_examen.models.TipoServicio
+import cl.jam.p2_examen.models.Measurement
+import cl.jam.p2_examen.models.MeasurementTypes
 import cl.jam.p2_examen.ui.vm.MeasurementViewModel
 import com.maxkeppeker.sheets.core.CoreDialog
+import com.maxkeppeker.sheets.core.models.CoreSelection
+import com.maxkeppeker.sheets.core.models.base.ButtonStyle
+import com.maxkeppeker.sheets.core.models.base.SelectionButton
 import com.maxkeppeler.sheets.calendar.CalendarDialog
 import com.maxkeppeler.sheets.calendar.models.CalendarConfig
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection
-import java.time.LocalDate
 
-import com.maxkeppeker.sheets.core.models.CoreSelection
-import com.maxkeppeker.sheets.core.models.base.ButtonStyle
-import com.maxkeppeker.sheets.core.models.base.IconSource
-import com.maxkeppeker.sheets.core.models.base.SelectionButton
-import com.maxkeppeker.sheets.core.models.base.UseCaseState
 import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 
 @ExperimentalMaterial3Api
@@ -41,10 +39,10 @@ fun MeasurementUI(
     navToHome: () -> Unit = {},
     vm: MeasurementViewModel = viewModel(factory = MeasurementViewModel.Factory)
 ) {
-    val context = LocalContext.current
-
-    var medidor by remember { mutableStateOf("") }
-    var strDate by remember { mutableStateOf(getDate()) }
+    var measurer by remember { mutableStateOf("") }
+    var strDate by remember { mutableStateOf(getDate(LocalDate.now())) }
+    var date by remember { mutableStateOf(LocalDateTime.now()) }
+    var selectedOption by remember { mutableStateOf(MeasurementTypes.entries[0]) }
 
     /***
      * Infomracion de date picker desde
@@ -53,22 +51,9 @@ fun MeasurementUI(
     val calendarState = rememberUseCaseState()
     val dialogState = rememberUseCaseState()
 
-    CalendarDialog(
-        state = calendarState,
-        config = CalendarConfig(
-            monthSelection = true,
-            yearSelection = true,
-        ), selection = CalendarSelection.Date() { d ->
-            strDate = "${d.year}-${d.monthValue.toString().padStart(2, '0')}-${
-                d.dayOfMonth.toString().padStart(2, '0')
-            }"
-            Log.v("SelecteDate", "$d")
-        })
-
-
     Scaffold(topBar = {
         TopBar(
-            title = "Agregar Medición",
+            title = stringResource(id = R.string.addMeasurement),
             onBackButtonClicked = navToHome,
             showBackButton = true,
             showAddButton = false
@@ -81,105 +66,113 @@ fun MeasurementUI(
                 .padding(start = 20.dp, end = 20.dp)
         ) {
             OutlinedTextField(
-                value = medidor,
-                onValueChange = { medidor = it },
-                label = { Text("Medidor") },
+                value = measurer,
+                onValueChange = {
+                    if (it.all { char -> char.isDigit() }) {
+                        measurer = it
+                    }
+                },
+                label = { Text(stringResource(id = R.string.measurer)) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp)
+                    .padding(bottom = 16.dp),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                isError = measurer.isEmpty(),
             )
             Row() {
                 OutlinedTextField(
                     value = strDate,
                     onValueChange = { },
-                    label = { Text("Fecha") },
-                    modifier = Modifier
-//                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
+                    label = { Text(stringResource(id = R.string.date)) },
+                    modifier = Modifier.padding(bottom = 16.dp),
                     readOnly = true
                 )
                 IconButton(
                     onClick = {
                         calendarState.show()
-//                        datePickerDialog.show()
-                    }, modifier = Modifier
-//                        .fillMaxWidth()
-                        .padding(top = 16.dp)
+                    },
+                    modifier = Modifier.padding(top = 16.dp)
                 ) {
                     Icon(imageVector = Icons.Default.DateRange, contentDescription = null)
                 }
             }
-            RadioButtonExample()
-            CoreSample1(dialogState, positiveClick = {
-                Log.v("Dialogo", "positivo")
-            }, negativeClick = {})
+
+            Text(stringResource(id = R.string.measurementOf))
+            MeasurementTypes.entries.forEach { option ->
+                Row(
+                    Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = (option == selectedOption),
+                        onClick = { selectedOption = option },
+                    )
+                    Text(
+                        text = when (option) {
+                            MeasurementTypes.AGUA -> stringResource(id = R.string.water)
+                            MeasurementTypes.LUZ -> stringResource(id = R.string.light)
+                            MeasurementTypes.GAS -> stringResource(id = R.string.gas)
+                        }
+                    )
+                }
+            }
+
             Button(
                 onClick = {
-                    dialogState.show()
+
+                    if (measurer.isEmpty()) {
+                        dialogState.show()
+                    }
+                    vm.addMeasurement(
+                        Measurement(
+                            date = date,
+                            value = measurer.toInt(),
+                            meterType = selectedOption
+                        )
+                    )
+                    navToHome()
+
                 }, modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp)
+                    .padding(top = 16.dp),
+                enabled = measurer.isNotEmpty()
+
             ) {
-                Text("Registrar Medicion")
+                Text(stringResource(id = R.string.addMeasurement))
             }
         }
     }
-}
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CoreSample1(
-    dialogState: UseCaseState,
-    positiveClick: () -> Unit,
-    negativeClick: () -> Unit
-) {
+    // Calendario
+    CalendarDialog(
+        state = calendarState,
+        config = CalendarConfig(
+            monthSelection = true,
+            yearSelection = true,
+        ), selection = CalendarSelection.Date() { d ->
+            date = d.atStartOfDay()
+            strDate = getDate(d)
+            Log.v("SelecteDate", "$d")
+        })
+
+    // Dialogo para confirmar si esta la medicion ingresada
     CoreDialog(
         state = dialogState,
         selection = CoreSelection(
             withButtonView = true,
-            negativeButton = SelectionButton(
-                "No", IconSource(Icons.Rounded.Notifications), ButtonStyle.FILLED
-            ),
+            negativeButton = null,
             positiveButton = SelectionButton(
-                "Si", IconSource(Icons.Rounded.AccountCircle), ButtonStyle.ELEVATED
-            ), onPositiveClick = {
-                positiveClick()
-            }, onNegativeClick = {
-                negativeClick()
-            }
+                stringResource(id = R.string.close),
+                icon = null,
+                ButtonStyle.FILLED
+            )
         ),
         onPositiveValid = true,
         body = {
-            Text(text = "Test")
+            Text(stringResource(id = R.string.missingInformation))
         },
     )
 }
 
-@Composable
-fun RadioButtonExample() {
-    val radioOptions = TipoServicio.entries
-    var selectedOption by remember { mutableStateOf(radioOptions[0]) }
-
-    Column {
-        Text("Medidor de:")
-        radioOptions.forEach { option ->
-            Row(
-                Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
-            ) {
-                RadioButton(
-                    selected = (option == selectedOption),
-                    onClick = { selectedOption = option },
-                )
-                Text(
-                    text = when (option) {
-                        TipoServicio.AGUA -> stringResource(id = R.string.agua)
-                        TipoServicio.LUZ -> stringResource(id = R.string.luz)
-                        TipoServicio.GAS -> stringResource(id = R.string.gas)
-                    }
-                )
-            }
-        }
-    }
-}
 
 

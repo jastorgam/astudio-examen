@@ -1,6 +1,16 @@
 <resources>
     <string name="app_name">p2_examen</string>
-    <string name="agua">Water</string>
-    <string name="luz">Luz</string>
+    <string name="water">Water</string>
+    <string name="light">Light</string>
     <string name="gas">Gas</string>
+    <string name="addMeasurement">Add Mearsuremet</string>
+    <string name="back">Back</string>
+    <string name="measurementList">Measurements List</string>
+    <string name="measurer">Meauser</string>
+    <string name="date">Date</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="close">Close</string>
+    <string name="measurementOf">Measurement of:</string>
+    <string name="missingInformation">Enter all data</string>
 </resources>

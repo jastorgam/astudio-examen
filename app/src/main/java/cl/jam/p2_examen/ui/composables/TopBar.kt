@@ -11,7 +11,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 
 @Preview()
@@ -24,10 +23,6 @@ fun TopBar(
     onButtonAddClicked: () -> Unit = {},
     onBackButtonClicked: () -> Unit = {}
 ) {
-    val context = LocalContext.current
-    val txtAdd = "Agregar Medición"
-    val txtBack = "Volver"
-
     TopAppBar(
         title = { Text(title) },
         navigationIcon = {
@@ -37,7 +32,7 @@ fun TopBar(
                 }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = txtBack
+                        contentDescription = null
                     )
                 }
             }
@@ -49,7 +44,7 @@ fun TopBar(
                 }) {
                     Icon(
                         imageVector = Icons.Filled.Add,
-                        contentDescription = txtAdd
+                        contentDescription = null
                     )
                 }
             }

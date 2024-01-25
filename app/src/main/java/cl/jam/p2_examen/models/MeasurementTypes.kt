@@ -1,6 +1,6 @@
 package cl.jam.p2_examen.models
 
-enum class TipoServicio {
+enum class MeasurementTypes {
     AGUA,
     LUZ,
     GAS

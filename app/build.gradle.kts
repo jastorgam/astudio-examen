@@ -60,8 +60,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
 
-    // Para boton
-//    implementation("androidx.compose.foundation:foundation-layout-android:1.6.0-rc01@aar")
+//    implementation("androidx.compose.foundation.layout:1.4.3")
+    implementation("androidx.compose.foundation:foundation-layout:1.6.0")
 
     // Para fecha
     implementation("com.maxkeppeler.sheets-compose-dialogs:core:1.2.1")
@@ -72,6 +72,8 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.2.0-beta02")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("androidx.fragment:fragment-ktx:1.6.2")
+    implementation("androidx.compose.material:material-icons-core:1.7.0-alpha01")
+    implementation("androidx.compose.material:material-icons-extended:1.7.0-alpha01")
 
     // Navegacion
     implementation("androidx.navigation:navigation-compose:2.7.6")

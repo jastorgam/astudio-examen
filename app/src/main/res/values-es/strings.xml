@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">p2_examen</string>
-    <string name="agua">Water</string>
-    <string name="luz">Luz</string>
+    <string name="water">Agua</string>
+    <string name="light">Luz</string>
     <string name="gas">Gas</string>
+    <string name="addMeasurement">Agregar Medicion</string>
+    <string name="back">Volver</string>
+    <string name="measurementList">Listado de Mediciones</string>
+    <string name="measurer">Medidor</string>
+    <string name="date">Fecha</string>
+    <string name="yes">Si</string>
+    <string name="no">No</string>
+    <string name="missingInformation">Ingrese todos los datos</string>
+    <string name="close">Cerrar</string>
+    <string name="measurementOf">Medidor de:</string>
 </resources>
