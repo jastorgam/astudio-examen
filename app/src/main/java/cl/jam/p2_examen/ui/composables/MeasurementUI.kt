@@ -6,22 +6,33 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.rounded.AccountCircle
+import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cl.jam.p2_examen.R
 import cl.jam.p2_examen.helpers.getDate
 import cl.jam.p2_examen.models.TipoServicio
 import cl.jam.p2_examen.ui.vm.MeasurementViewModel
-import com.maxkeppeker.sheets.core.models.base.rememberSheetState
+import com.maxkeppeker.sheets.core.CoreDialog
 import com.maxkeppeler.sheets.calendar.CalendarDialog
 import com.maxkeppeler.sheets.calendar.models.CalendarConfig
 import com.maxkeppeler.sheets.calendar.models.CalendarSelection
 import java.time.LocalDate
+
+import com.maxkeppeker.sheets.core.models.CoreSelection
+import com.maxkeppeker.sheets.core.models.base.ButtonStyle
+import com.maxkeppeker.sheets.core.models.base.IconSource
+import com.maxkeppeker.sheets.core.models.base.SelectionButton
+import com.maxkeppeker.sheets.core.models.base.UseCaseState
+import com.maxkeppeker.sheets.core.models.base.rememberUseCaseState
+
 
 @ExperimentalMaterial3Api
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -39,14 +50,15 @@ fun MeasurementUI(
      * Infomracion de date picker desde
      * https://www.youtube.com/watch?v=uAw87DdUnxg
      */
-    val calendarState = rememberSheetState()
+    val calendarState = rememberUseCaseState()
+    val dialogState = rememberUseCaseState()
+
     CalendarDialog(
         state = calendarState,
         config = CalendarConfig(
             monthSelection = true,
             yearSelection = true,
-        ),
-        selection = CalendarSelection.Date() { d ->
+        ), selection = CalendarSelection.Date() { d ->
             strDate = "${d.year}-${d.monthValue.toString().padStart(2, '0')}-${
                 d.dayOfMonth.toString().padStart(2, '0')
             }"
@@ -98,9 +110,12 @@ fun MeasurementUI(
                 }
             }
             RadioButtonExample()
+            CoreSample1(dialogState, positiveClick = {
+                Log.v("Dialogo", "positivo")
+            }, negativeClick = {})
             Button(
                 onClick = {
-
+                    dialogState.show()
                 }, modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp)
@@ -111,6 +126,34 @@ fun MeasurementUI(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CoreSample1(
+    dialogState: UseCaseState,
+    positiveClick: () -> Unit,
+    negativeClick: () -> Unit
+) {
+    CoreDialog(
+        state = dialogState,
+        selection = CoreSelection(
+            withButtonView = true,
+            negativeButton = SelectionButton(
+                "No", IconSource(Icons.Rounded.Notifications), ButtonStyle.FILLED
+            ),
+            positiveButton = SelectionButton(
+                "Si", IconSource(Icons.Rounded.AccountCircle), ButtonStyle.ELEVATED
+            ), onPositiveClick = {
+                positiveClick()
+            }, onNegativeClick = {
+                negativeClick()
+            }
+        ),
+        onPositiveValid = true,
+        body = {
+            Text(text = "Test")
+        },
+    )
+}
 
 @Composable
 fun RadioButtonExample() {
@@ -121,8 +164,7 @@ fun RadioButtonExample() {
         Text("Medidor de:")
         radioOptions.forEach { option ->
             Row(
-                Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
             ) {
                 RadioButton(
                     selected = (option == selectedOption),

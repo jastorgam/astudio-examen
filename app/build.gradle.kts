@@ -64,8 +64,8 @@ dependencies {
 //    implementation("androidx.compose.foundation:foundation-layout-android:1.6.0-rc01@aar")
 
     // Para fecha
-    implementation("com.maxkeppeler.sheets-compose-dialogs:core:1.0.2")
-    implementation("com.maxkeppeler.sheets-compose-dialogs:calendar:1.0.2")
+    implementation("com.maxkeppeler.sheets-compose-dialogs:core:1.2.1")
+    implementation("com.maxkeppeler.sheets-compose-dialogs:calendar:1.2.1")
 
 //    implementation("androidx.compose.material3:material3")
     // Material 3
