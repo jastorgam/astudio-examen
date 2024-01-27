@@ -109,8 +109,8 @@ fun MeasurementUI(
                     )
                     Text(
                         text = when (option) {
-                            MeasurementTypes.AGUA -> stringResource(id = R.string.water)
-                            MeasurementTypes.LUZ -> stringResource(id = R.string.light)
+                            MeasurementTypes.WATER -> stringResource(id = R.string.water)
+                            MeasurementTypes.LIGHT -> stringResource(id = R.string.light)
                             MeasurementTypes.GAS -> stringResource(id = R.string.gas)
                         }
                     )
@@ -123,6 +123,7 @@ fun MeasurementUI(
                     if (measurer.isEmpty()) {
                         dialogState.show()
                     }
+
                     vm.addMeasurement(
                         Measurement(
                             date = date,
